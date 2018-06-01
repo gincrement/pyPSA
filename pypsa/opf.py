@@ -1469,6 +1469,9 @@ def network_lopf_solve(network, snapshots=None, formulation="angles", solver_opt
 
     status = network.results["Solver"][0]["Status"].key
     termination_condition = network.results["Solver"][0]["Termination condition"].key
+# mg -> start
+    duration = network.results["Solver"][0]["Time"]
+# mg -> end
 
     if status == "ok" and termination_condition == "optimal":
         logger.info("Optimization successful")
@@ -1482,7 +1485,14 @@ def network_lopf_solve(network, snapshots=None, formulation="angles", solver_opt
         logger.error("Optimisation failed with status %s and terminal condition %s"
               % (status, termination_condition))
 
-    return status, termination_condition
+# mg -> start
+#    return status, termination_condition
+    network.status = status
+    network.termination_condition = termination_condition
+    network.duration = duration
+    
+    return status, termination_condition, duration
+# mg -> end
 
 def network_lopf(network, snapshots=None, solver_name="glpk", solver_io=None,
                  skip_pre=False, extra_functionality=None, solver_options={},
